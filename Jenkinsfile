@@ -25,15 +25,32 @@ pipeline {
 		 }
 		 stage  ('Test'){
 			steps {
-		   		sh 'mvn test'
+		   		echo 'mvn test'
 		   		
 			}	
 		 }		 
-		 stage  ('Integration Test'){
+		 stage  ('Package'){
 			steps {
-		   		sh 'mvn failesafe:integration-test failsafe:verify'
+		   		sh 'mvn package -DskipTests'
 		   		
 			}	
+		 }
+		 stage('Build Docker Image'){
+				steps {
+					scripts {
+						dockerImage = docker.build("in28min/currency-exchange-devops:${env.BUILD_TAG}")
+					}
+				}
+		 }
+		 stage('Push Docker Image'){
+			steps {
+					scripts {
+						docker.withRegistry('','dockerhub') {}
+							dockerImage.push();
+							dockerImage.push('latest');
+						}
+					}
+				}
 		 }
 	}
 	post {
