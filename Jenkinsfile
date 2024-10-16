@@ -10,5 +10,9 @@ pipeline {
 		   		echo "Test"
 			}	
 		 }
+	} post {
+		always {
+			echo 'I m awesome!'
+		}
 	}	
 }
